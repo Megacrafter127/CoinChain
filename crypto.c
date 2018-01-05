@@ -39,7 +39,7 @@ int _verifySig(const unsigned char *msg, size_t len, const cc_sig *sig, const cc
 	cc_sig sign;
 	memcpy(&sign,sig,sizeof(cc_sig));
 	
-	if(1 == EVP_DigestVerifyFinal(mdctx, sign, sizeof(cc_sig))) ret=1;
+	if(1 == EVP_DigestVerifyFinal(mdctx, sign, sizeof(cc_sig))) ret=-1;
 	
 	err:
 
@@ -63,13 +63,13 @@ int _validate(chain ch,unsigned char **buff, unsigned char **base,size_t *len) {
 	if(!_validate(prev,buff,base,len)) return 0;
 	const link *lnk=getLastLink(ch);
 	if(!swriteCLink(ch,buff,base,len)) return 0;
-	if(!_verifySig(*base,*buff-*base-2*sizeof(cc_sig),&(lnk->sendver),getOwner(prev))) return 0;
-	return _verifySig(*base,*buff-*base-sizeof(cc_sig),&(lnk->recvver),&(lnk->recipient)); 
+	if(!_verifySig(*base,*buff-*base-2*sizeof(cc_sig),&(lnk->hlink.sendver),getOwner(prev))) return 0;
+	return _verifySig(*base,*buff-*base-sizeof(cc_sig),&(lnk->recvver),&(lnk->hlink.recipient)); 
 }
 
 extern int validate(chain chain) {
 	if(!chain) return 0;
-	size_t len=4*sizeof(cc_key)+sizeof(cc_uid)+7*sizeof(cc_sig);
+	size_t len=sizeof(anchor)+4*sizeof(link);
 	unsigned char *x=malloc(len),*y=x;
 	int ret=_validate(chain,&x,&y,&len);
 	free(y);

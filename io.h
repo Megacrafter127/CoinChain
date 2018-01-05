@@ -8,8 +8,17 @@
 #define IO_H_
 
 #include "data.h"
+#ifdef __cplusplus
+#include <cstddef>
+#include <cstdio>
+#else
 #include <stddef.h>
 #include <stdio.h>
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern int fwriteKey(const cc_key *key,FILE *f);
 extern int swriteKey(const cc_key *key,unsigned char **buffer,unsigned char **base,size_t *limit);
@@ -25,6 +34,11 @@ extern int fwriteUID(const cc_uid *uid,FILE *f);
 extern int swriteUID(const cc_uid *uid,unsigned char **buffer,unsigned char **base,size_t *limit);
 extern int freadUID(cc_uid *uid,FILE *f);
 extern int sreadUID(cc_uid *uid,const unsigned char *buffer,const unsigned char *end,const unsigned char **new);
+
+extern int fwriteHalfLink(const halflink *lnk,FILE *f);
+extern int swriteHalfLink(const halflink *lnk,unsigned char **buffer,unsigned char **base,size_t *limit);
+extern int freadHalfLink(halflink *lnk,FILE *f);
+extern int sreadHalfLink(halflink *lnk,const unsigned char *buffer,const unsigned char *end,const unsigned char **new);
 
 extern int fwriteLink(const link *lnk,FILE *f);
 extern int swriteLink(const link *lnk,unsigned char **buffer,unsigned char **base,size_t *limit);
@@ -45,5 +59,9 @@ extern int freadChain(chain *chain,FILE *f);
 extern int sreadChain(chain *chain,const unsigned char *buffer,const unsigned char *end,const unsigned char **new);
 extern int freadCLink(chain *chain,FILE *f);
 extern int sreadCLink(chain *chain,const unsigned char *buffer,const unsigned char *end,const unsigned char **new);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* IO_H_ */

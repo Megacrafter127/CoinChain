@@ -9,6 +9,25 @@
 #include "crypto.h"
 #include <stdlib.h>
 
+extern int anchorcmp(const anchor *a, const anchor *b) {
+	int cmp=memcmp(a->key,b->key,sizeof(cc_key));
+	if(cmp) return cmp;
+	cmp=memcmp(a->uid,b->uid,sizeof(cc_uid));
+	if(cmp) return cmp;
+	return memcmp(a->sig,b->sig,sizeof(cc_sig));
+}
+
+extern int halflinkcmp(const halflink *a, const halflink *b) {
+	int cmp=memcmp(a->recipient,b->recipient,sizeof(cc_key));
+	if(cmp) return cmp;
+	return memcmp(a->sendver,b->sendver,sizeof(cc_sig));
+}
+extern int linkcmp(const link *a, const link *b) {
+	int cmp=halflinkcmp(&(a->hlink),&(b->hlink));
+	if(!cmp) return cmp;
+	return memcmp(a->recvver,b->recvver,sizeof(cc_sig));
+}
+
 typedef struct _chain {
 	union {
 		anchor anch;
@@ -17,10 +36,8 @@ typedef struct _chain {
 			chain super;
 		} ring;
 	} chain;
-	char type:1;
-} *chain_t;
-
-#define chain_s sizeof(struct _chain)
+	unsigned char type:1;
+} *chain_t, chain_r;
 
 extern void cleanChain(chain chain) {
 	if(!chain) return;
@@ -56,13 +73,31 @@ extern chain getPrev(chain chain) {
 }
 extern const cc_key *getOwner(chain chain) {
 	if(!chain) return NULL;
-	if(chain->type) return &(chain->chain.ring.link.recipient);
+	if(chain->type) return &(chain->chain.ring.link.hlink.recipient);
 	return &(chain->chain.anch.key);
 }
+extern int chaineq(chain a,chain b) {
+	if(a==b) return -1;
+	if(!a || !b) return 0;
+	if(a->type!=b->type) return 0;
+	if(a->type) {
+		if(!linkcmp(a->chain.ring.link,b->chain.ring.link)) return 0;
+		return chaineq(a->chain.ring.super,b->chain.ring.super);
+	}
+	return !anchorcmp(a->chain.anch,b->chain.anch);
+}
+extern int ischild(chain parent, chain child) {
+	if(!parent) return -1;
+	if(!child) return 0;
+	if(chaineq(parent,child)) return -1;
+	return ischild(parent,getPrev(child));
+}
+
+
 
 extern chain createChain(const anchor *anchor) {
 	if(!anchor) return NULL;
-	chain_t ret=malloc(chain_s);
+	chain_t ret=malloc(sizeof(chain_r));
 	if(!ret) return NULL;
 	ret->type=0;
 	ret->chain.anch=*anchor;
@@ -75,7 +110,7 @@ extern chain createChain(const anchor *anchor) {
 
 extern chain appendChain(const link *l,chain ch) {
 	if(!l) return ch;
-	chain_t ret=malloc(chain_s);
+	chain_t ret=malloc(sizeof(chain_r));
 	if(!ret) return ch;
 	ret->type=1;
 	ret->chain.ring.link=*l;

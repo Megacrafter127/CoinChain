@@ -84,25 +84,37 @@ extern int sreadUID(cc_uid *key,const unsigned char *buffer,const unsigned char 
 	return 1;
 }
 
+extern int fwriteHalfLink(const halflink *lnk,FILE *f) {
+	if(!fwriteKey(&(lnk->recipient),f)) return 0;
+	return fwriteSig(&(lnk->sendver),f);
+}
+extern int swriteHalfLink(const halflink *lnk,unsigned char **buffer,unsigned char **base,size_t *limit) {
+	if(!swriteKey(&(lnk->recipient),buffer,base,limit)) return 0;
+	return swriteSig(&(lnk->sendver),buffer,base,limit);
+}
+extern int freadHalfLink(halflink *lnk,FILE *f) {
+	if(!freadKey(&(lnk->recipient),f)) return 0;
+	return freadSig(&(lnk->sendver),f);
+}
+extern int sreadHalfLink(halflink *lnk,const unsigned char *buffer,const unsigned char *end,const unsigned char **new) {
+	if(!sreadKey(&(lnk->recipient),buffer,end,new)) return 0;
+	return sreadSig(&(lnk->sendver),buffer,end,new);
+}
 
 extern int fwriteLink(const link *lnk,FILE *f) {
-	if(!fwriteKey(&(lnk->recipient),f)) return 0;
-	if(!fwriteSig(&(lnk->sendver),f)) return 0;
+	if(!fwriteHalfLink(&(lnk->hlink),f)) return 0;
 	return fwriteSig(&(lnk->recvver),f);
 }
 extern int swriteLink(const link *lnk,unsigned char **buffer,unsigned char **base,size_t *limit) {
-	if(!swriteKey(&(lnk->recipient),buffer,base,limit)) return 0;
-	if(!swriteSig(&(lnk->sendver),buffer,base,limit)) return 0;
+	if(!swriteHalfLink(&(lnk->hlink),buffer,base,limit)) return 0;
 	return swriteSig(&(lnk->recvver),buffer,base,limit);
 }
 extern int freadLink(link *lnk,FILE *f) {
-	if(!freadKey(&(lnk->recipient),f)) return 0;
-	if(!freadSig(&(lnk->sendver),f)) return 0;
+	if(!freadHalfLink(&(lnk->hlink),f)) return 0;
 	return freadSig(&(lnk->recvver),f);
 }
 extern int sreadLink(link *lnk,const unsigned char *buffer,const unsigned char *end,const unsigned char **new) {
-	if(!sreadKey(&(lnk->recipient),buffer,end,new)) return 0;
-	if(!sreadSig(&(lnk->sendver),buffer,end,new)) return 0;
+	if(!sreadHalfLink(&(lnk->hlink),buffer,end,new)) return 0;
 	return sreadSig(&(lnk->recvver),buffer,end,new);
 }
 
