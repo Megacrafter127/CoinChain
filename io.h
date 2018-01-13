@@ -10,55 +10,39 @@
 #include "data.h"
 #ifdef __cplusplus
 #include <cstddef>
-#include <cstdio>
 #else
 #include <stddef.h>
-#include <stdio.h>
 #endif
+
+#include <openssl/bio.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern int fwriteKey(const cc_key *key,FILE *f);
-extern int swriteKey(const cc_key *key,unsigned char **buffer,unsigned char **base,size_t *limit);
-extern int freadKey(cc_key *key,FILE *f);
-extern int sreadKey(cc_key *key,const unsigned char *buffer,const unsigned char *end,const unsigned char **new);
+extern int writeKey(const cc_key *key,BIO *f);
+extern int readKey(cc_key *key,BIO *f);
 
-extern int fwriteSig(const cc_sig *sig,FILE *f);
-extern int swriteSig(const cc_sig *sig,unsigned char **buffer,unsigned char **base,size_t *limit);
-extern int freadSig(cc_sig *sig,FILE *f);
-extern int sreadSig(cc_sig *sig,const unsigned char *buffer,const unsigned char *end,const unsigned char **new);
+extern int writeSig(const cc_sig *sig,BIO *f);
+extern int readSig(cc_sig *sig,BIO *f);
 
-extern int fwriteUID(const cc_uid *uid,FILE *f);
-extern int swriteUID(const cc_uid *uid,unsigned char **buffer,unsigned char **base,size_t *limit);
-extern int freadUID(cc_uid *uid,FILE *f);
-extern int sreadUID(cc_uid *uid,const unsigned char *buffer,const unsigned char *end,const unsigned char **new);
+extern int writeUID(const cc_uid *uid,BIO *f);
+extern int readUID(cc_uid *uid,BIO *f);
 
-extern int fwriteHalfLink(const halflink *lnk,FILE *f);
-extern int swriteHalfLink(const halflink *lnk,unsigned char **buffer,unsigned char **base,size_t *limit);
-extern int freadHalfLink(halflink *lnk,FILE *f);
-extern int sreadHalfLink(halflink *lnk,const unsigned char *buffer,const unsigned char *end,const unsigned char **new);
+extern int writeHalfLink(const halflink *lnk,BIO *f);
+extern int readHalfLink(halflink *lnk,BIO *f);
 
-extern int fwriteLink(const link *lnk,FILE *f);
-extern int swriteLink(const link *lnk,unsigned char **buffer,unsigned char **base,size_t *limit);
-extern int freadLink(link *lnk,FILE *f);
-extern int sreadLink(link *lnk,const unsigned char *buffer,const unsigned char *end,const unsigned char **new);
+extern int writeLink(const link *lnk,BIO *f);
+extern int readLink(link *lnk,BIO *f);
 
-extern int fwriteAnchor(const anchor *lnk,FILE *f);
-extern int swriteAnchor(const anchor *lnk,unsigned char **buffer,unsigned char **base,size_t *limit);
-extern int freadAnchor(anchor *lnk,FILE *f);
-extern int sreadAnchor(anchor *lnk,const unsigned char *buffer,const unsigned char *end,const unsigned char **new);
+extern int writeAnchor(const anchor *lnk,BIO *f);
+extern int readAnchor(anchor *lnk,BIO *f);
 
-extern int fwriteChain(chain chain,FILE *f);
-extern int swriteChain(chain chain,unsigned char **buffer,unsigned char **base,size_t *limit);
-extern int fwriteCLink(chain chain,FILE *f);
-extern int swriteCLink(chain chain,unsigned char **buffer,unsigned char **base,size_t *limit);
+extern int writeChain(chain chain,BIO *f);
+extern int writeCLink(chain chain,BIO *f);
 
-extern int freadChain(chain *chain,FILE *f);
-extern int sreadChain(chain *chain,const unsigned char *buffer,const unsigned char *end,const unsigned char **new);
-extern int freadCLink(chain *chain,FILE *f);
-extern int sreadCLink(chain *chain,const unsigned char *buffer,const unsigned char *end,const unsigned char **new);
+extern int readChain(chain *chain,BIO *f);
+extern int readCLink(chain *chain,BIO *f);
 
 #ifdef __cplusplus
 }

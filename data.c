@@ -9,8 +9,14 @@
 #include "crypto.h"
 #include <stdlib.h>
 
+extern int keycmp(const cc_key a, const cc_key b) {
+	int cmp=BN_cmp(a->n,b->n);
+	if(cmp) return cmp;
+	return BN_cmp(a->e,b->e);
+}
+
 extern int anchorcmp(const anchor *a, const anchor *b) {
-	int cmp=memcmp(a->key,b->key,sizeof(cc_key));
+	int cmp=keycmp(a->key,b->key);
 	if(cmp) return cmp;
 	cmp=memcmp(a->uid,b->uid,sizeof(cc_uid));
 	if(cmp) return cmp;

@@ -7,8 +7,8 @@
 #ifndef DATA_H_
 #define DATA_H_
 
-#ifndef CC_KEYLEN
-#define CC_KEYLEN 256
+#ifndef CC_KEYLEN_BIT
+#define CC_KEYLEN_BIT 2048
 #endif
 #ifndef CC_SIGLEN
 #define CC_SIGLEN 256
@@ -22,10 +22,6 @@ extern "C" {
 #endif
 typedef unsigned char
 		/**
-		 * RSA public key. raw bytes
-		 */
-		cc_key[CC_KEYLEN],
-		/**
 		 * SHA256 digest, RSA signed
 		 */
 		cc_sig[CC_SIGLEN],
@@ -33,6 +29,14 @@ typedef unsigned char
 		 * UID
 		 */
 		cc_uid[CC_UIDLEN];
+
+typedef const RSA
+		/**
+		 * RSA public key.
+		 */
+		*cc_key;
+
+extern int keycmp(const cc_key a, const cc_key b);
 
 typedef const struct _chain
 		/**
