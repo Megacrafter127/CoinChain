@@ -24,8 +24,9 @@ int _verifySig(const unsigned char *msg, size_t len, const cc_sig *sig, cc_key k
 	
 	/* Create the Message Digest Context */
 	if(!(mdctx = EVP_MD_CTX_create())) goto err;
-	
-	if(1 != EVP_PKEY_set1_RSA(evk,key)) goto err;
+	RSA rsa;
+	memcpy(&rsa,key,sizeof(RSA));
+	if(1 != EVP_PKEY_set1_RSA(evk,&rsa)) goto err;
 	
 	/* Initialize `key` with a public key */
 	if(1 != EVP_DigestVerifyInit(mdctx, NULL, EVP_sha256(), NULL, evk)) goto err;
@@ -52,10 +53,10 @@ int _validate(chain ch,BIO *b) {
 	if(!prev) {
 		const anchor *anch=getAnchor(ch);
 		if(!anch) return 0;
-		if(!swriteChain(ch,b)) return 0;
+		if(!writeChain(ch,b)) return 0;
 		const unsigned char *base=NULL;
 		const size_t len=BIO_get_mem_data(b,&base);
-		return _verifySig(base,len,&(anch->sig),&(anch->key));
+		return _verifySig(base,len,&(anch->sig),anch->key);
 	}
 	if(!_validate(prev,b)) return 0;
 	const link *lnk=getLastLink(ch);
@@ -63,7 +64,7 @@ int _validate(chain ch,BIO *b) {
 	const unsigned char *base=NULL;
 	const size_t len=BIO_get_mem_data(b,&base);
 	if(!_verifySig(*base,len,&(lnk->hlink.sendver),getOwner(prev))) return 0;
-	return _verifySig(*base,len,&(lnk->recvver),&(lnk->hlink.recipient)); 
+	return _verifySig(*base,len,&(lnk->recvver),lnk->hlink.recipient); 
 }
 
 extern int validate(chain chain) {

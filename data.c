@@ -8,6 +8,7 @@
 #include "data.h"
 #include "crypto.h"
 #include <stdlib.h>
+#include <string.h>
 
 extern int keycmp(const cc_key a, const cc_key b) {
 	int cmp=BN_cmp(a->n,b->n);
@@ -87,10 +88,10 @@ extern int chaineq(chain a,chain b) {
 	if(!a || !b) return 0;
 	if(a->type!=b->type) return 0;
 	if(a->type) {
-		if(!linkcmp(a->chain.ring.link,b->chain.ring.link)) return 0;
+		if(!linkcmp(&(a->chain.ring.link),&(b->chain.ring.link))) return 0;
 		return chaineq(a->chain.ring.super,b->chain.ring.super);
 	}
-	return !anchorcmp(a->chain.anch,b->chain.anch);
+	return !anchorcmp(&(a->chain.anch),&(b->chain.anch));
 }
 extern int ischild(chain parent, chain child) {
 	if(!parent) return -1;

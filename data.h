@@ -7,6 +7,8 @@
 #ifndef DATA_H_
 #define DATA_H_
 
+#include <openssl/rsa.h>
+
 #ifndef CC_KEYLEN_BIT
 #define CC_KEYLEN_BIT 2048
 #endif
@@ -38,7 +40,7 @@ typedef const RSA
 
 extern int keycmp(const cc_key a, const cc_key b);
 
-typedef const struct _chain
+typedef struct _chain
 		/**
 		 * blockchain
 		 */

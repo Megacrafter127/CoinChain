@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <openssl/pem.h>
 
 extern int writeKey(const cc_key *key,BIO *f) {
 	return PEM_write_bio_RSAPublicKey(f,key);
@@ -36,7 +37,7 @@ extern int writeHalfLink(const halflink *lnk,BIO *f) {
 	return writeSig(&(lnk->sendver),f);
 }
 extern int readHalfLink(halflink *lnk,BIO *f) {
-	int d=readKey(&(lnk->recipient),f));
+	int d=readKey(&(lnk->recipient),f);
 	if(d<=0) return d;
 	return readSig(&(lnk->sendver),f);
 }
